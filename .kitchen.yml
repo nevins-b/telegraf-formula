@@ -1,0 +1,24 @@
+driver:
+  name: vagrant
+
+platforms:
+  - name: bento/centos-7.2
+  - name: bento/ubuntu-16.04
+
+provisioner:
+  name: salt_solo
+  formula: telegraf
+  require_chef_omnibus: false
+  require_chef: false
+
+verifier:
+  name: inspec
+
+suites:
+  - name: default
+
+    provisioner:
+      state_top:
+        base:
+          '*':
+            - telegraf

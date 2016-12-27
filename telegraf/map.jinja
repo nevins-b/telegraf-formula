@@ -2,21 +2,22 @@
 
 {% set os_map = salt['grains.filter_by']({
     'Debian': {
-      'pkgsuffix': '_amd64.deb',
-      'source_url': 'https://dl.influxdata.com/telegraf/releases/telegraf_',
-      'source_hash': '128ac6845f12b5001706a217823dca58',
+      'humanname': 'influxdb',
+      'name': 'deb https://repos.influxdata.com/debian ' ~ salt['grains.get']('lsb_distrib_codename') ~' stable',
+      'file': '/etc/apt/sources.list.d/influxdb.list',
+      'key_url': 'https://repos.influxdata.com/influxdb.key'
     },
     'RedHat': {
-      'pkgsuffix': '.x86_64.rpm',
-      'source_url': 'https://dl.influxdata.com/telegraf/releases/telegraf-',
-      'source_hash': '90388d5dc0e4c3fd86341fcf6bbbd48d',
+      'humanname': 'InfluxDB Repository - RHEL $releasever',
+      'baseurl': 'https://repos.influxdata.com/rhel/$releasever/$basearch/stable',
+      'enabled': 1,
+      'gpgcheck': 1,
+      'gpgkey': ' https://repos.influxdata.com/influxdb.key'
     }
   }
   , grain="os_family"
   , merge=salt['pillar.get']('telegraf:lookup'))
 %}
-
-{% do default_settings.telegraf.update(os_map) %}
 
 {% set telegraf = salt['pillar.get'](
     'telegraf',

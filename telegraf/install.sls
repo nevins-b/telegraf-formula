@@ -1,17 +1,13 @@
-{% from "telegraf/map.jinja" import telegraf with context %}
+{% from "telegraf/map.jinja" import os_map with context %}
 
-telegraf-pkg:
-  file.managed:
-    - name: /tmp/telegraf_{{ telegraf.version }}{{ telegraf.pkgsuffix }}
-    - source: {{ telegraf.source_url }}{{ telegraf.version }}{{ telegraf.pkgsuffix }}
-    - source_hash: md5={{ telegraf.source_hash }}
-    - unless: test -f /tmp/telegraf_{{ telegraf.version }}{{ telegraf.pkgsuffix }}
+telegraf-repo:
+  pkgrepo.managed:
+    {%- for key, value in os_map.items() %}
+    - {{ key }}: {{ value }}
+    {%- endfor %}
 
 telegraf-install:
   pkg.installed:
-    - sources:
-      - telegraf: /tmp/telegraf_{{ telegraf.version }}{{ telegraf.pkgsuffix }}
+    - name: telegraf
     - require:
-      - file: telegraf-pkg
-    - watch:
-      - file: telegraf-pkg
+      - pkgrepo: telegraf-repo
